@@ -148,7 +148,7 @@
 ;; (use-package matlab-mode
 ;;   :init
 ;;   (matlab-cedet-setup))
-(matlab-cedet-setup)
+;; (matlab-cedet-setup)
 
 (use-package google-this
   :init
