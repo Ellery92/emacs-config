@@ -103,6 +103,11 @@
   (require 'smartparens-config)
   (smartparens-global-mode))
 
+(sp-with-modes '(c-mode c++-mode java-mode)
+  (sp-local-pair "{" nil :post-handlers '(("    ||\n[i]" "RET")))
+  (sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
+                                            ("* ||\n[i]" "RET"))))
+
 (use-package smex)
 
 (use-package undo-tree
