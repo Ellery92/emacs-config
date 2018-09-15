@@ -1,60 +1,4 @@
-;; C-IDE based on https://github.com/tuhdo/emacs-c-ide-demo
-(use-package cc-mode
-  :config
-  ;; Available C style:
-  ;; "gnu": The default style for GNU projects
-  ;; "k&r": What Kernighan and Ritchie, the authors of C used in their book
-  ;; "bsd": What BSD developers use, aka "Allman style" after Eric Allman.
-  ;; "whitesmith": Popularized by the examples that came with Whitesmiths C, an early commercial C compiler.
-  ;; "stroustrup": What Stroustrup, the author of C++ used in his book
-  ;; "ellemtel": Popular C++ coding standards as defined by "Programming in C++, Rules and Recommendations," Erik Nyquist and Mats Henricson, Ellemtel
-  ;; "linux": What the Linux developers use for kernel development
-  ;; "python": What Python developers use for extension modules
-  ;; "java": The default style for java-mode (see below)
-  ;; "user": When you want to define your own style
-  (setq c-default-style "linux") ;; set style to "linux"
-  (setq gdb-many-windows t ;; use gdb-many-windows by default
-	gdb-show-main t))
-
-(use-package semantic
-  :config
-  (global-semanticdb-minor-mode 1)
-  (global-semantic-idle-scheduler-mode 1)
-  (global-semantic-stickyfunc-mode 1)
-  (semantic-mode 1))
-
-;; (use-package ede
-;;   :config
-;;   ;; Enable EDE only in C/C++
-;;   (global-ede-mode))
-
-(require 'setup-helm-gtags)
-
-;; company-c-headers
-(use-package company-c-headers
-  :init
-  (add-to-list 'company-backends 'company-c-headers)
-  :config
-  (add-to-list 'company-c-headers-path-system "/usr/include/c++/6.3.1/"))
-
-(defun alexott/cedet-hook ()
-  (local-set-key (kbd "C-c C-j") 'semantic-ia-fast-jump))
-
-;; hs-minor-mode for folding source code
-(add-hook 'c-mode-common-hook 'hs-minor-mode)
-(add-hook 'c-mode-common-hook 'alexott/cedet-hook)
-(add-hook 'c-mode-hook 'alexott/cedet-hook)
-(add-hook 'c++-mode-hook 'alexott/cedet-hook)
-
-;; (use-package srefactor-lisp)
-
-(use-package srefactor
-  :config
-  (semantic-mode 1) ;; -> this is optional for Lisp
-  :bind
-  (:map c++-mode-map ("M-RET" . srefactor-refactor-at-point))
-  (:map c-mode-map ("M-RET" . srefactor-refactor-at-point)))
-
+;; cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 (use-package irony
   :config
   (progn
@@ -71,24 +15,48 @@
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)))
 
 (use-package company-irony
-  :config
-  (progn
-    (eval-after-load 'company '(add-to-list 'company-backends 'company-irony))))
+  :init
+  (add-to-list 'company-backends 'company-irony))
+
+(use-package company-irony-c-headers
+  ;; Load with `irony-mode` as a grouped backend
+  :init
+  (add-to-list 'company-backends 'company-irony-c-headers))
 
 (use-package flycheck-irony
   :config
   (progn
     (flycheck-irony-setup)))
-    ;; (defun setup-flycheck-irony ()
-    ;;   (flycheck-select-checker 'irony))
-    ;; (add-hook 'c-mode-hook #'setup-flycheck-irony)
-    ;; (add-hook 'c++-mode-hook #'setup-flycheck-irony)))
 
-;; Eldoc shows argument list of the function you are currently writing in the echo area.
 (use-package irony-eldoc
   :config
   (progn
     (add-hook 'irony-mode-hook #'irony-eldoc)))
+
+(require 'setup-helm-gtags)
+
+(use-package semantic
+  :config
+  (global-semanticdb-minor-mode 1)
+  (global-semantic-idle-scheduler-mode 1)
+  (global-semantic-stickyfunc-mode 1)
+  (semantic-mode 1))
+
+(defun alexott/cedet-hook ()
+  (local-set-key (kbd "C-c C-j") 'semantic-ia-fast-jump))
+
+;; hs-minor-mode for folding source code
+(add-hook 'c-mode-common-hook 'hs-minor-mode)
+(add-hook 'c-mode-common-hook 'alexott/cedet-hook)
+(add-hook 'c-mode-hook 'alexott/cedet-hook)
+(add-hook 'c++-mode-hook 'alexott/cedet-hook)
+
+(use-package srefactor
+  :config
+  (semantic-mode 1) ;; -> this is optional for Lisp
+  :bind
+  (:map c++-mode-map ("M-RET" . srefactor-refactor-at-point))
+  (:map c-mode-map ("M-RET" . srefactor-refactor-at-point)))
 
 (use-package rtags
   :config
@@ -138,5 +106,7 @@
 ;;     (add-hook 'c-mode-hook #'setup-flycheck-rtags)
 ;;     (add-hook 'c++-mode-hook #'setup-flycheck-rtags)
 ;;     ))
+
+;; (use-package helm-kythe)
 
 (provide 'lang-c)
