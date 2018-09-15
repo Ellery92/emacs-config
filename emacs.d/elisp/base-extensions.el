@@ -5,7 +5,8 @@
 
 (use-package company
   :config
-  (setq company-minimum-prefix-length 1)
+  (setq company-minimum-prefix-length 3)
+  (delete 'company-semantic company-backends)
   (add-hook 'after-init-hook 'global-company-mode))
 
 (use-package ediff
@@ -149,6 +150,7 @@
 ;;   :init
 ;;   (matlab-cedet-setup))
 (matlab-cedet-setup)
+(defalias 'run-matlab 'matlab-shell)
 
 (use-package google-this
   :init
