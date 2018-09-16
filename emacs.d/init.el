@@ -9,7 +9,7 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 
-(package-initialize)
+;; (package-initialize)
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/")
              '("elpy" . "http://jorgenschaefer.github.io/packages/"))
@@ -28,6 +28,10 @@
 (require 'base-functions)
 (require 'base-global-keys)
 
+(require 'lang-c)
+
+(require 'lang-java)
+
 (require 'lang-python)
 
 (require 'lang-ruby)
@@ -43,7 +47,3 @@
 (require 'lang-haskell)
 
 (require 'lang-elixir)
-
-(require 'lang-c)
-
-(require 'lang-java)

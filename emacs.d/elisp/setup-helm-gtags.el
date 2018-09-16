@@ -1,7 +1,5 @@
 ;; this variables must be set before load helm-gtags
 ;; you can change to any prefix key of your choice
-(setq helm-gtags-prefix-key "\C-cg")
-
 (use-package helm-gtags
   :init
   (progn
@@ -26,12 +24,12 @@
     (add-hook 'asm-mode-hook 'helm-gtags-mode)
 
     ;; key bindings
-    (with-eval-after-load 'helm-gtags
-      (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
-      (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
-      (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
-      (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
-      (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
-      (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history))))
+    ;; (with-eval-after-load 'helm-gtags
+      ;; (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
+      ;; (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+      ;; (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
+      ;; (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
+      ;; (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+      ;; (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history))))
 
 (provide 'setup-helm-gtags)

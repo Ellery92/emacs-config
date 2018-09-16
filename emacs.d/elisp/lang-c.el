@@ -33,7 +33,57 @@
   (progn
     (add-hook 'irony-mode-hook #'irony-eldoc)))
 
-(require 'setup-helm-gtags)
+(use-package rtags
+  :config
+  (progn
+    (unless (or (rtags-executable-find "rc") (rtags-executable-find "rdm"))
+      (call-interactively #'rtags-install))
+
+    (rtags-enable-standard-keybindings)
+    (define-key c-mode-base-map (kbd "M-.") 'rtags-find-symbol-at-point)
+    (define-key c-mode-base-map (kbd "M-?") 'rtags-find-references-at-point)
+    (define-key c-mode-base-map (kbd "M-,") 'rtags-location-stack-back)
+
+    ;; run rdm
+    (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
+    (add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
+
+    ;; Shutdown rdm when leaving emacs.
+    (add-hook 'kill-emacs-hook 'rtags-quit-rdm)))
+
+(use-package helm-rtags
+  :config
+  (progn
+    (setq rtags-display-result-backend 'helm)))
+
+(use-package helm-gtags
+  :init
+  (setq helm-gtags-ignore-case t
+        helm-gtags-auto-update t
+        helm-gtags-use-input-at-cursor t
+        helm-gtags-pulse-at-cursor t
+        helm-gtags-prefix-key "\C-cg"
+        helm-gtags-suggested-key-mapping nil)
+  :config
+  (progn
+    (define-key helm-gtags-mode-map (kbd "C-c g .") 'helm-gtags-dwim)
+    (define-key helm-gtags-mode-map (kbd "C-c g ?") 'helm-gtags-find-rtag)
+    (define-key helm-gtags-mode-map (kbd "C-c g ,") 'helm-gtags-pop-stack)
+    (define-key helm-gtags-mode-map (kbd "C-c g t") 'helm-gtags-find-tag)
+
+    ;; Enable helm-gtags-mode in Dired so you can jump to any tag
+    ;; when navigate project tree with Dired
+    (add-hook 'dired-mode-hook 'helm-gtags-mode)
+
+    ;; Enable helm-gtags-mode in Eshell for the same reason as above
+    (add-hook 'eshell-mode-hook 'helm-gtags-mode)
+    (add-hook 'shell-mode-hook 'helm-gtags-mode)
+
+    ;; Enable helm-gtags-mode in languages that GNU Global supports
+    (add-hook 'c-mode-hook 'helm-gtags-mode)
+    (add-hook 'c++-mode-hook 'helm-gtags-mode)
+    (add-hook 'java-mode-hook 'helm-gtags-mode)
+    (add-hook 'asm-mode-hook 'helm-gtags-mode)))
 
 (use-package semantic
   :config
@@ -57,56 +107,5 @@
   :bind
   (:map c++-mode-map ("M-RET" . srefactor-refactor-at-point))
   (:map c-mode-map ("M-RET" . srefactor-refactor-at-point)))
-
-(use-package rtags
-  :config
-  (progn
-    (unless (rtags-executable-find "rc") (error "Binary rc is not installed!"))
-    (unless (rtags-executable-find "rdm") (error "Binary rdm is not installed!"))
-
-    (define-key c-mode-base-map (kbd "M-.") 'rtags-find-symbol-at-point)
-    (define-key c-mode-base-map (kbd "M-,") 'rtags-find-references-at-point)
-    (define-key c-mode-base-map (kbd "M-?") 'rtags-display-summary)
-    (rtags-enable-standard-keybindings)
-
-    (setq rtags-use-helm t)
-
-    ;; Shutdown rdm when leaving emacs.
-    (add-hook 'kill-emacs-hook 'rtags-quit-rdm)))
-
-;; TODO: Has no coloring! How can I get coloring?
-(use-package helm-rtags
-  :config
-  (progn
-    (setq rtags-display-result-backend 'helm)))
-
-;; Use rtags for auto-completion.
-;; (use-package company-rtags
-;;   :require company rtags
-;;   :config
-;;   (progn
-;;     (setq rtags-autostart-diagnostics t)
-;;     (rtags-diagnostics)
-;;     (setq rtags-completions-enabled t)
-;;     (push 'company-rtags company-backends)))
-
-;; Live code checking.
-;; (use-package flycheck-rtags
-;;   :require flycheck rtags
-;;   :config
-;;   (progn
-;;     ;; ensure that we use only rtags checking
-;;     ;; https://github.com/Andersbakken/rtags#optional-1
-;;     (defun setup-flycheck-rtags ()
-;;       (flycheck-select-checker 'rtags)
-;;       (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
-;;       (setq-local flycheck-check-syntax-automatically nil)
-;;       (rtags-set-periodic-reparse-timeout 2.0)  ;; Run flycheck 2 seconds after being idle.
-;;       )
-;;     (add-hook 'c-mode-hook #'setup-flycheck-rtags)
-;;     (add-hook 'c++-mode-hook #'setup-flycheck-rtags)
-;;     ))
-
-;; (use-package helm-kythe)
 
 (provide 'lang-c)
