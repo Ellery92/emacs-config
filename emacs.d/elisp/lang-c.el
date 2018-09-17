@@ -14,19 +14,19 @@
 
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)))
 
-(use-package company-irony
-  :init
-  (add-to-list 'company-backends 'company-irony))
+;; (use-package company-irony
+;;   :init
+;;   (add-to-list 'company-backends 'company-irony))
 
 (use-package company-irony-c-headers
   ;; Load with `irony-mode` as a grouped backend
   :init
   (add-to-list 'company-backends 'company-irony-c-headers))
 
-(use-package flycheck-irony
-  :config
-  (progn
-    (flycheck-irony-setup)))
+;; (use-package flycheck-irony
+;;   :config
+;;   (progn
+;;     (flycheck-irony-setup)))
 
 (use-package irony-eldoc
   :config
@@ -55,6 +55,20 @@
   :config
   (progn
     (setq rtags-display-result-backend 'helm)))
+
+(use-package company-rtags
+  :init
+  (push 'company-rtags company-backends))
+
+(defun my-flycheck-rtags-setup ()
+  (flycheck-select-checker 'rtags)
+  (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
+  (setq-local flycheck-check-syntax-automatically nil))
+
+(use-package flycheck-rtags
+  :config
+  ;; c-mode-common-hook is also called by c++-mode
+  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup))
 
 (use-package helm-gtags
   :init

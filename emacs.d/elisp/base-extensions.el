@@ -151,11 +151,10 @@
   :ensure t
   :init (global-flycheck-mode))
 
-;; (use-package matlab-mode
-  ;; :config
-(matlab-cedet-setup)
-(defalias 'run-matlab 'matlab-shell)
-;; )
+(use-package matlab-mode
+  :config
+  (matlab-cedet-setup)
+  (defalias 'run-matlab 'matlab-shell))
 
 (use-package google-this
   :init
@@ -222,6 +221,17 @@
 (use-package helm-xref
   :config
   (setq xref-show-xrefs-function 'helm-xref-show-xrefs))
+
+;; cmake-related
+(use-package cmake-mode)
+
+(use-package cmake-font-lock
+  :config
+  (add-hook 'cmake-mode-hook 'cmake-font-lock-activate))
+
+(use-package cmake-ide
+  :init
+  (cmake-ide-setup))
 
 (use-package pdf-tools
   :init (pdf-tools-install)
