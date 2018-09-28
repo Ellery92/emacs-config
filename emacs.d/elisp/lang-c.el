@@ -1,3 +1,117 @@
+;; for code navigate
+(use-package helm-gtags
+  :init
+  (setq helm-gtags-ignore-case t
+        helm-gtags-auto-update t
+        helm-gtags-use-input-at-cursor t
+        helm-gtags-pulse-at-cursor t
+        helm-gtags-prefix-key "\C-cg"
+        helm-gtags-suggested-key-mapping t)
+  :config
+  (progn
+    (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+    (define-key helm-gtags-mode-map (kbd "M-.") nil)
+
+    ;; Enable helm-gtags-mode in Dired so you can jump to any tag
+    ;; when navigate project tree with Dired
+    (add-hook 'dired-mode-hook 'helm-gtags-mode)
+
+    ;; Enable helm-gtags-mode in Eshell for the same reason as above
+    (add-hook 'eshell-mode-hook 'helm-gtags-mode)
+    (add-hook 'shell-mode-hook 'helm-gtags-mode)
+
+    ;; Enable helm-gtags-mode in languages that GNU Global supports
+    (add-hook 'c-mode-hook 'helm-gtags-mode)
+    (add-hook 'c++-mode-hook 'helm-gtags-mode)
+    (add-hook 'java-mode-hook 'helm-gtags-mode)
+    (add-hook 'asm-mode-hook 'helm-gtags-mode)))
+
+(use-package rtags
+  :config
+  (progn
+    (unless (or (rtags-executable-find "rc") (rtags-executable-find "rdm"))
+      (call-interactively #'rtags-install))
+
+    (rtags-enable-standard-keybindings)
+
+    ;; Shutdown rdm when leaving emacs.
+    (add-hook 'kill-emacs-hook 'rtags-quit-rdm)))
+
+(use-package helm-rtags
+  :config
+  (progn
+    (setq rtags-display-result-backend 'helm)))
+
+;; cmake-related
+(use-package cmake-mode)
+
+(use-package cmake-ide
+  :init
+  ;; (add-hook 'before-save-hook #'cide--before-save)
+  )
+
+(defun set-rtags-env (build-prefix)
+  (setq cmake-ide-project-dir project-root)
+  (setq cmake-ide-build-dir (concat project-root build-prefix))
+  (rtags-start-process-unless-running)
+  t)
+
+(defun is-cmake-project nil
+  (let ((project-root
+         (ignore-errors (projectile-project-root))))
+    (if project-root
+        (if (file-exists-p (expand-file-name "compile_commands.json" project-root))
+            (set-rtags-env "")
+          (if (file-exists-p (expand-file-name "build/compile_commands.json" project-root))
+                 (set-rtags-env "build")
+            (if (file-exists-p (expand-file-name "CMakeLists.txt" project-root))
+                (progn
+                  (cmake-ide-maybe-run-cmake)
+                  (set-rtags-env "build"))
+              nil)))
+      nil)))
+
+(defun rtags-dwim nil
+    (if (and (buffer-file-name) (thing-at-point 'symbol))
+        (rtags-find-symbol-at-point)
+      (rtags-find-symbol)))
+
+(defun cc-find-symbol-at-point nil
+  (interactive)
+  (if (is-cmake-project)
+      (rtags-dwim)
+    (helm-gtags-dwim)))
+
+(defun cc-find-rtag nil
+  (interactive)
+  (if (is-cmake-project)
+      (rtags-find-references-at-point)
+    (helm-gtags-find-rtag)))
+
+(defun cc-tags-pop-stack nil
+  (interactive)
+  (if (is-cmake-project)
+      (rtags-location-stack-back)
+    (helm-gtags-pop-stack)))
+
+(defun projectile-run-cmake nil
+  (interactive)
+  (let ((project-root
+         (ignore-errors (projectile-project-root))))
+    (if project-root
+        (progn
+          (setq cmake-ide-project-dir project-root)
+          (setq cmake-ide-build-dir (concat project-root "build"))
+          (cmake-ide-maybe-run-cmake))
+      (message "you are not in a project"))))
+
+(define-key c-mode-map (kbd "M-.") 'cc-find-symbol-at-point)
+(define-key c++-mode-map (kbd "M-.") 'cc-find-symbol-at-point)
+(define-key c-mode-map (kbd "M-,") 'cc-tags-pop-stack)
+(define-key c++-mode-map (kbd "M-,") 'cc-tags-pop-stack)
+(define-key c-mode-map (kbd "M-?") 'cc-find-rtag)
+(define-key c++-mode-map (kbd "M-?") 'cc-find-rtag)
+
 ;; cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 (use-package irony
   :config
@@ -14,90 +128,45 @@
 
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)))
 
-;; (use-package company-irony
-;;   :init
-;;   (add-to-list 'company-backends 'company-irony))
+(use-package company-irony
+  :init
+  (add-to-list 'company-backends 'company-irony))
 
 (use-package company-irony-c-headers
   ;; Load with `irony-mode` as a grouped backend
   :init
   (add-to-list 'company-backends 'company-irony-c-headers))
 
-;; (use-package flycheck-irony
-;;   :config
-;;   (progn
-;;     (flycheck-irony-setup)))
+(use-package company-rtags
+  :init
+  (push 'company-rtags company-backends))
 
 (use-package irony-eldoc
   :config
   (progn
     (add-hook 'irony-mode-hook #'irony-eldoc)))
 
-(use-package rtags
-  :config
-  (progn
-    (unless (or (rtags-executable-find "rc") (rtags-executable-find "rdm"))
-      (call-interactively #'rtags-install))
+;; flycheck related
+;; (use-package flycheck-irony
+;;   :config
+;;   (progn
+;;     (flycheck-irony-setup)))
 
-    (rtags-enable-standard-keybindings)
-    (define-key c-mode-base-map (kbd "M-.") 'rtags-find-symbol-at-point)
-    (define-key c-mode-base-map (kbd "M-?") 'rtags-find-references-at-point)
-    (define-key c-mode-base-map (kbd "M-,") 'rtags-location-stack-back)
-
-    ;; run rdm
-    (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
-    (add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
-
-    ;; Shutdown rdm when leaving emacs.
-    (add-hook 'kill-emacs-hook 'rtags-quit-rdm)))
-
-(use-package helm-rtags
-  :config
-  (progn
-    (setq rtags-display-result-backend 'helm)))
-
-(use-package company-rtags
-  :init
-  (push 'company-rtags company-backends))
+(use-package flycheck-rtags)
 
 (defun my-flycheck-rtags-setup ()
   (flycheck-select-checker 'rtags)
   (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
   (setq-local flycheck-check-syntax-automatically nil))
 
-(use-package flycheck-rtags
-  :config
-  ;; c-mode-common-hook is also called by c++-mode
-  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup))
+(defun cc-flycheck-setup ()
+  (flycheck-mode)
+  (if (is-cmake-project)
+      (my-flycheck-rtags-setup)
+    (flycheck-select-checker 'c/c++-gcc)))
 
-(use-package helm-gtags
-  :init
-  (setq helm-gtags-ignore-case t
-        helm-gtags-auto-update t
-        helm-gtags-use-input-at-cursor t
-        helm-gtags-pulse-at-cursor t
-        helm-gtags-prefix-key "\C-cg"
-        helm-gtags-suggested-key-mapping nil)
-  :config
-  (progn
-    (define-key helm-gtags-mode-map (kbd "C-c g .") 'helm-gtags-dwim)
-    (define-key helm-gtags-mode-map (kbd "C-c g ?") 'helm-gtags-find-rtag)
-    (define-key helm-gtags-mode-map (kbd "C-c g ,") 'helm-gtags-pop-stack)
-    (define-key helm-gtags-mode-map (kbd "C-c g t") 'helm-gtags-find-tag)
-
-    ;; Enable helm-gtags-mode in Dired so you can jump to any tag
-    ;; when navigate project tree with Dired
-    (add-hook 'dired-mode-hook 'helm-gtags-mode)
-
-    ;; Enable helm-gtags-mode in Eshell for the same reason as above
-    (add-hook 'eshell-mode-hook 'helm-gtags-mode)
-    (add-hook 'shell-mode-hook 'helm-gtags-mode)
-
-    ;; Enable helm-gtags-mode in languages that GNU Global supports
-    (add-hook 'c-mode-hook 'helm-gtags-mode)
-    (add-hook 'c++-mode-hook 'helm-gtags-mode)
-    (add-hook 'java-mode-hook 'helm-gtags-mode)
-    (add-hook 'asm-mode-hook 'helm-gtags-mode)))
+(add-hook 'c-mode-hook #'cc-flycheck-setup)
+(add-hook 'c++-mode-hook #'cc-flycheck-setup)
 
 (use-package semantic
   :config
