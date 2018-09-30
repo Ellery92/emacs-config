@@ -47,3 +47,5 @@
 (require 'lang-haskell)
 
 (require 'lang-elixir)
+
+(require 'extra-extensions)

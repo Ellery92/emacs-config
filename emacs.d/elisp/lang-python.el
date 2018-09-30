@@ -5,9 +5,20 @@
 ;;; Code:
 (use-package elpy
   :init
+  (setq elpy-rpc-python-command "python3")
+  (setq elpy-eldoc-show-current-function t)
   (elpy-enable)
-  (setq elpy-rpc-python-command "python3"
-  elpy-eldoc-show-current-function t))
+  :config
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode)
+  (require 'py-autopep8)
+  (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
+
+(use-package ein
+  :config
+  (setq ein:use-auto-complete t)
+  (setq ein:use-smartrep t)
+  (setq ein:jupyter-default-notebook-directory "/home/ellery/Documents"))
 
 ;; kivy: kv file
 (use-package kivy-mode

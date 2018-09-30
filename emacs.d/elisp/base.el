@@ -96,9 +96,41 @@
  ;; Non-nil means display source file containing the main routine at startup
  gdb-show-main t)
 
-(add-to-list 'load-path (concat user-emacs-directory "elisp/use-package"))
 (add-to-list 'load-path (concat user-emacs-directory "elisp/misc"))
-(require 'use-package)
+
+;; mail
+;; ~/.authinfo.gpg
+;; machine imap.gmail.com login <USER> password <APP-PASSWORD> port imaps
+;; machine smtp.gmail.com login <USER> password <APP-PASSWORD> port 587
+
+(defun use-gmail-config ()
+  (interactive)
+  (setq user-mail-address "elleryq92@gmail.com"
+        user-full-name "Ellery Wang")
+  (setq gnus-select-method
+        '(nnimap "gmail"
+	             (nnimap-address "imap.gmail.com")
+	             (nnimap-server-port "imaps")
+	             (nnimap-stream ssl)))
+  (setq smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587
+        gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
+
+(defun use-qqmail-config ()
+  (interactive)
+  (setq user-mail-address "ellery-wang@qq.com"
+        user-full-name "Ellery Wang")
+  (setq gnus-select-method
+        '(nnimap "qq"
+	             (nnimap-address "imap.qq.com")
+	             (nnimap-server-port "imaps")
+	             (nnimap-stream ssl)))
+  (setq smtpmail-smtp-server "smtp.qq.com"
+        smtpmail-smtp-service 25
+        gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
+
+(use-gmail-config)
+;; (use-qqmail-config)
 
 (provide 'base)
 ;;; base ends here
