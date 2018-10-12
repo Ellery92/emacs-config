@@ -150,8 +150,8 @@
 (use-package flycheck
   :ensure t)
 
-;; (ignore-errors (use-package matlab-mode
-;;                 :init
+(unless (package-installed-p 'matlab-mode)
+  (package-install 'matlab-mode))
 (ignore-errors (matlab-cedet-setup))
 (defalias 'run-matlab 'matlab-shell)
 
