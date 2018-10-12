@@ -147,8 +147,8 @@
   :ensure t)
 
 (unless (package-installed-p 'matlab-mode)
-  (package-install matlab-mode))
-(matlab-cedet-setup)
+  (package-install 'matlab-mode))
+(ignore-errors (matlab-cedet-setup))
 (defalias 'run-matlab 'matlab-shell)
 
 (use-package google-this

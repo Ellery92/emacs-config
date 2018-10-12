@@ -89,7 +89,7 @@
   (interactive)
   (if (is-cmake-project)
       (rtags-find-references-at-point)
-    (helm-gtags-find-rtag)))
+    (helm-gtags-find-rtag (thing-at-point 'symbol))))
 
 (defun cc-tags-pop-stack nil
   (interactive)
@@ -193,5 +193,10 @@
   :bind
   (:map c++-mode-map ("M-RET" . srefactor-refactor-at-point))
   (:map c-mode-map ("M-RET" . srefactor-refactor-at-point)))
+
+(defun diable-namespace-indent nil
+  (c-set-offset 'innamespace 0))
+
+(add-hook 'c++-mode-hook 'diable-namespace-indent)
 
 (provide 'lang-c)
