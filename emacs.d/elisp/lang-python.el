@@ -14,6 +14,8 @@
   (require 'py-autopep8)
   (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
 
+(use-package smartrep)
+
 (use-package ein
   :config
   (setq ein:use-auto-complete t)

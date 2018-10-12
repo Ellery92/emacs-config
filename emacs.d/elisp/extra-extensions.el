@@ -20,6 +20,14 @@
 
 (use-package helm-youtube
   :config
-  (setq helm-youtube-key "API AIzaSyDz-ATMpi_vEsVD2dUDhwu4kh8XZa5UfcQ"))
+  (setq request-curl-options (list "--preproxy" "socks5://127.0.0.1:1080"))
+  (setq helm-youtube-key "AIzaSyDz-ATMpi_vEsVD2dUDhwu4kh8XZa5UfcQ"))
+
+(use-package restclient)
+;; (use-package restclient-helm)
+
+(use-package restart-emacs)
+
+(use-package pcap-mode)
 
 (provide 'extra-extensions)

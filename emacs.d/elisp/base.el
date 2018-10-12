@@ -132,5 +132,11 @@
 (use-gmail-config)
 ;; (use-qqmail-config)
 
+(setq socks-noproxy '("127.0.0.1"))
+(setq socks-server '("Default server" "127.0.0.1" 1080 5))
+(setq url-gateway-method 'socks)
+
+(setq browse-url-generic-program "google-chrome-stable")
+
 (provide 'base)
 ;;; base ends here

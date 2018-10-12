@@ -6,11 +6,13 @@
         helm-gtags-use-input-at-cursor t
         helm-gtags-pulse-at-cursor t
         helm-gtags-prefix-key "\C-cg"
-        helm-gtags-suggested-key-mapping t)
+        helm-gtags-suggested-key-mapping nil)
   :config
   (progn
-    (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
     (define-key helm-gtags-mode-map (kbd "M-.") nil)
+    (define-key helm-gtags-mode-map (kbd "C-c g j") 'helm-gtags-select)
+    (define-key helm-gtags-mode-map (kbd "C-c g d") 'helm-gtags-dwim)
+    (define-key helm-gtags-mode-map (kbd "C-c g p") 'helm-gtags-pop-stack)
 
     ;; Enable helm-gtags-mode in Dired so you can jump to any tag
     ;; when navigate project tree with Dired
@@ -24,7 +26,8 @@
     (add-hook 'c-mode-hook 'helm-gtags-mode)
     (add-hook 'c++-mode-hook 'helm-gtags-mode)
     (add-hook 'java-mode-hook 'helm-gtags-mode)
-    (add-hook 'asm-mode-hook 'helm-gtags-mode)))
+    (add-hook 'asm-mode-hook 'helm-gtags-mode)
+    (add-hook 'emacs-lisp-mode-hook 'helm-gtags-mode)))
 
 (use-package rtags
   :config
@@ -117,7 +120,7 @@
   :config
   (progn
     ;; If irony server was never installed, install it.
-    (unless (irony--find-server-executable) (call-interactively #'irony-install-server))
+    ;; (unless (ignore-errors (irony--find-server-executable) (call-interactively #'irony-install-server)))
 
     (add-hook 'c++-mode-hook 'irony-mode)
     (add-hook 'c-mode-hook 'irony-mode)

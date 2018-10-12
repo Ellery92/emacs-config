@@ -1,4 +1,4 @@
-
+(use-package diminish)
 (use-package ace-jump-mode
   :bind
   ("C-c SPC" . ace-jump-mode))
@@ -26,8 +26,6 @@
 (use-package expand-region
   :bind
   ("C-=" . er/expand-region))
-
-(require 'setup-helm)
 
 (use-package hlinum
   :config
@@ -141,8 +139,6 @@
 
 (windmove-default-keybindings)
 
-(require 'setup-editing)
-
 ;; show red column number when it exceeds 70
 (require 'modeline-posn)
 (column-number-mode 1)
@@ -150,14 +146,17 @@
 (use-package flycheck
   :ensure t)
 
-;; (ignore-errors (use-package matlab-mode
-;;                 :init
-(ignore-errors (matlab-cedet-setup))
+(unless (package-installed-p 'matlab-mode)
+  (package-install matlab-mode))
+(matlab-cedet-setup)
 (defalias 'run-matlab 'matlab-shell)
 
 (use-package google-this
   :init
   (google-this-mode 1))
+
+(with-eval-after-load "google-this"
+  (diminish 'google-this-mode))
 
 (use-package treemacs
   :ensure t
