@@ -13,6 +13,9 @@
     (define-key helm-gtags-mode-map (kbd "C-c g j") 'helm-gtags-select)
     (define-key helm-gtags-mode-map (kbd "C-c g d") 'helm-gtags-dwim)
     (define-key helm-gtags-mode-map (kbd "C-c g p") 'helm-gtags-pop-stack)
+    (define-key helm-gtags-mode-map (kbd "C-c g .") 'helm-gtags-dwim)
+    (define-key helm-gtags-mode-map (kbd "C-c g ,") 'helm-gtags-pop-stack)
+    (define-key helm-gtags-mode-map (kbd "C-c g ?") 'helm-gtags-find-rtag)
 
     ;; Enable helm-gtags-mode in Dired so you can jump to any tag
     ;; when navigate project tree with Dired
@@ -26,6 +29,7 @@
     (add-hook 'c-mode-hook 'helm-gtags-mode)
     (add-hook 'c++-mode-hook 'helm-gtags-mode)
     (add-hook 'java-mode-hook 'helm-gtags-mode)
+    (add-hook 'python-mode-hook 'helm-gtags-mode)
     (add-hook 'asm-mode-hook 'helm-gtags-mode)
     (add-hook 'emacs-lisp-mode-hook 'helm-gtags-mode)))
 

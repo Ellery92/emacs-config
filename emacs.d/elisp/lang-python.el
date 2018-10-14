@@ -2,17 +2,35 @@
 ;;; Commentary:
 ;;; Contains my python configs
 
-;;; Code:
-(use-package elpy
-  :init
-  (setq elpy-rpc-python-command "python3")
-  (setq elpy-eldoc-show-current-function t)
-  (elpy-enable)
+(use-package anaconda-mode
+  ;; :init
+  ;; (add-to-list 'python-shell-extra-pythonpaths "/path/to/the/project")
   :config
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode)
-  (require 'py-autopep8)
-  (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+  (add-to-list 'company-backends 'company-anaconda)
+
+  (add-hook 'python-mode-hook 'flycheck-mode)
+
+  (define-key anaconda-mode-map (kbd "M-?") 'anaconda-mode-find-references))
+
+(use-package py-autopep8
+  :config
+  (add-hook 'python-mode-hook 'py-autopep8-enable-on-save))
+
+(use-package py-isort)
+
+(unless (package-installed-p 'importmagic)
+  (package-install 'importmagic))
+
+(defun auto-import-missing nil
+  (interactive)
+  (progn
+    (importmagic-mode +1)
+    (importmagic-fix-imports)
+    (setq importmagic-mode nil)))
+
+(define-key python-mode-map (kbd "C-c C-l") 'auto-import-missing)
 
 (use-package smartrep)
 
