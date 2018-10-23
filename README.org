@@ -1,1 +1,6 @@
 * emacs config
+** how to install
+#+BEGIN_SRC bash
+cask install
+make install
+#+END_SRC

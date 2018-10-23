@@ -1,61 +1,54 @@
 ;; for code navigate
-(use-package helm-gtags
-  :init
-  (setq helm-gtags-ignore-case t
-        helm-gtags-auto-update t
-        helm-gtags-use-input-at-cursor t
-        helm-gtags-pulse-at-cursor t
-        helm-gtags-prefix-key "\C-cg"
-        helm-gtags-suggested-key-mapping nil)
-  :config
-  (progn
-    (define-key helm-gtags-mode-map (kbd "M-.") nil)
-    (define-key helm-gtags-mode-map (kbd "C-c g j") 'helm-gtags-select)
-    (define-key helm-gtags-mode-map (kbd "C-c g d") 'helm-gtags-dwim)
-    (define-key helm-gtags-mode-map (kbd "C-c g p") 'helm-gtags-pop-stack)
-    (define-key helm-gtags-mode-map (kbd "C-c g .") 'helm-gtags-dwim)
-    (define-key helm-gtags-mode-map (kbd "C-c g ,") 'helm-gtags-pop-stack)
-    (define-key helm-gtags-mode-map (kbd "C-c g ?") 'helm-gtags-find-rtag)
+(require 'helm-gtags)
 
-    ;; Enable helm-gtags-mode in Dired so you can jump to any tag
-    ;; when navigate project tree with Dired
-    (add-hook 'dired-mode-hook 'helm-gtags-mode)
+(setq helm-gtags-ignore-case t
+      helm-gtags-auto-update t
+      helm-gtags-use-input-at-cursor t
+      helm-gtags-pulse-at-cursor t
+      helm-gtags-prefix-key "\C-cg"
+      helm-gtags-suggested-key-mapping nil)
+(progn
+  (define-key helm-gtags-mode-map (kbd "M-.") nil)
+  (define-key helm-gtags-mode-map (kbd "C-c g j") 'helm-gtags-select)
+  (define-key helm-gtags-mode-map (kbd "C-c g d") 'helm-gtags-dwim)
+  (define-key helm-gtags-mode-map (kbd "C-c g p") 'helm-gtags-pop-stack)
+  (define-key helm-gtags-mode-map (kbd "C-c g .") 'helm-gtags-dwim)
+  (define-key helm-gtags-mode-map (kbd "C-c g ,") 'helm-gtags-pop-stack)
+  (define-key helm-gtags-mode-map (kbd "C-c g ?") 'helm-gtags-find-rtag)
 
-    ;; Enable helm-gtags-mode in Eshell for the same reason as above
-    (add-hook 'eshell-mode-hook 'helm-gtags-mode)
-    (add-hook 'shell-mode-hook 'helm-gtags-mode)
+  ;; Enable helm-gtags-mode in Dired so you can jump to any tag
+  ;; when navigate project tree with Dired
+  (add-hook 'dired-mode-hook 'helm-gtags-mode)
 
-    ;; Enable helm-gtags-mode in languages that GNU Global supports
-    (add-hook 'c-mode-hook 'helm-gtags-mode)
-    (add-hook 'c++-mode-hook 'helm-gtags-mode)
-    (add-hook 'java-mode-hook 'helm-gtags-mode)
-    (add-hook 'python-mode-hook 'helm-gtags-mode)
-    (add-hook 'asm-mode-hook 'helm-gtags-mode)
-    (add-hook 'emacs-lisp-mode-hook 'helm-gtags-mode)))
+  ;; Enable helm-gtags-mode in Eshell for the same reason as above
+  (add-hook 'eshell-mode-hook 'helm-gtags-mode)
+  (add-hook 'shell-mode-hook 'helm-gtags-mode)
 
-(use-package rtags
-  :config
-  (progn
-    (unless (or (rtags-executable-find "rc") (rtags-executable-find "rdm"))
-      (call-interactively #'rtags-install))
+  ;; Enable helm-gtags-mode in languages that GNU Global supports
+  (add-hook 'c-mode-hook 'helm-gtags-mode)
+  (add-hook 'c++-mode-hook 'helm-gtags-mode)
+  (add-hook 'java-mode-hook 'helm-gtags-mode)
+  (add-hook 'python-mode-hook 'helm-gtags-mode)
+  (add-hook 'asm-mode-hook 'helm-gtags-mode)
+  (add-hook 'emacs-lisp-mode-hook 'helm-gtags-mode))
 
-    (rtags-enable-standard-keybindings)
+(require 'rtags)
+(progn
+  (unless (or (rtags-executable-find "rc") (rtags-executable-find "rdm"))
+    (call-interactively #'rtags-install))
 
-    ;; Shutdown rdm when leaving emacs.
-    (add-hook 'kill-emacs-hook 'rtags-quit-rdm)))
+  (rtags-enable-standard-keybindings)
 
-(use-package helm-rtags
-  :config
-  (progn
-    (setq rtags-display-result-backend 'helm)))
+  ;; Shutdown rdm when leaving emacs.
+  (add-hook 'kill-emacs-hook 'rtags-quit-rdm))
+
+(require 'helm-rtags)
+(setq rtags-display-result-backend 'helm)
 
 ;; cmake-related
-(use-package cmake-mode)
-
-(use-package cmake-ide
-  :init
-  ;; (add-hook 'before-save-hook #'cide--before-save)
-  )
+(require 'cmake-mode)
+(require 'cmake-ide)
+(add-hook 'before-save-hook #'cide--before-save)
 
 (defun set-rtags-env (build-prefix)
   (setq cmake-ide-project-dir project-root)
@@ -120,46 +113,41 @@
 (define-key c++-mode-map (kbd "M-?") 'cc-find-rtag)
 
 ;; cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
-(use-package irony
-  :config
-  (progn
-    ;; If irony server was never installed, install it.
-    ;; (unless (ignore-errors (irony--find-server-executable) (call-interactively #'irony-install-server)))
+(require 'irony)
+(progn
+  ;; If irony server was never installed, install it.
+  ;; (unless (ignore-errors (irony--find-server-executable) (call-interactively #'irony-install-server)))
 
-    (add-hook 'c++-mode-hook 'irony-mode)
-    (add-hook 'c-mode-hook 'irony-mode)
+  (add-hook 'c++-mode-hook 'irony-mode)
+  (add-hook 'c-mode-hook 'irony-mode)
 
-    ;; Use compilation database first, clang_complete as fallback.
-    (setq-default irony-cdb-compilation-databases '(irony-cdb-libclang
-                                                    irony-cdb-clang-complete))
+  ;; Use compilation database first, clang_complete as fallback.
+  (setq-default irony-cdb-compilation-databases '(irony-cdb-libclang
+                                                  irony-cdb-clang-complete))
 
-    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)))
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
-(use-package company-irony
-  :init
-  (add-to-list 'company-backends 'company-irony))
+(require 'company-irony)
+(add-to-list 'company-backends 'company-irony)
 
-(use-package company-irony-c-headers
-  ;; Load with `irony-mode` as a grouped backend
-  :init
-  (add-to-list 'company-backends 'company-irony-c-headers))
+(require 'company-irony-c-headers)
+;; Load with `irony-mode` as a grouped backend
+(add-to-list 'company-backends 'company-irony-c-headers)
 
-(use-package company-rtags
-  :init
-  (push 'company-rtags company-backends))
+(require 'company-rtags)
+(push 'company-rtags company-backends)
 
-(use-package irony-eldoc
-  :config
-  (progn
-    (add-hook 'irony-mode-hook #'irony-eldoc)))
+(require 'irony-eldoc)
+(progn
+  (add-hook 'irony-mode-hook #'irony-eldoc))
 
 ;; flycheck related
-;; (use-package flycheck-irony
+;; (require 'flycheck-irony
 ;;   :config
 ;;   (progn
 ;;     (flycheck-irony-setup)))
 
-(use-package flycheck-rtags)
+(require 'flycheck-rtags)
 
 (defun my-flycheck-rtags-setup ()
   (flycheck-select-checker 'rtags)
@@ -175,13 +163,12 @@
 (add-hook 'c-mode-hook #'cc-flycheck-setup)
 (add-hook 'c++-mode-hook #'cc-flycheck-setup)
 
-(use-package semantic
-  :config
-  (global-semanticdb-minor-mode 1)
-  (global-semantic-idle-scheduler-mode 1)
-  (global-semantic-stickyfunc-mode 1)
-  (semantic-mode 1))
+(require 'semantic)
 
+(global-semanticdb-minor-mode 1)
+(global-semantic-idle-scheduler-mode 1)
+(global-semantic-stickyfunc-mode 1)
+(semantic-mode 1)
 (defun alexott/cedet-hook ()
   (local-set-key (kbd "C-c C-j") 'semantic-ia-fast-jump))
 
@@ -191,16 +178,17 @@
 (add-hook 'c-mode-hook 'alexott/cedet-hook)
 (add-hook 'c++-mode-hook 'alexott/cedet-hook)
 
-(use-package srefactor
-  :config
-  (semantic-mode 1) ;; -> this is optional for Lisp
-  :bind
-  (:map c++-mode-map ("M-RET" . srefactor-refactor-at-point))
-  (:map c-mode-map ("M-RET" . srefactor-refactor-at-point)))
-
+(require 'srefactor)
+(semantic-mode 1) ;; -> this is optional for Lisp
+(define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+(define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
 (defun diable-namespace-indent nil
   (c-set-offset 'innamespace 0))
 
 (add-hook 'c++-mode-hook 'diable-namespace-indent)
+
+(require 'cpp-auto-include)
+(define-key c++-mode-map (kbd "C-c C-i") 'cpp-auto-include)
+(define-key c-mode-map (kbd "C-c C-i") 'cpp-auto-include)
 
 (provide 'lang-c)

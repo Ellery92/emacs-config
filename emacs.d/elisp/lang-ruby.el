@@ -1,11 +1,8 @@
-(use-package enh-ruby-mode
-  :mode
-  (("\\.rb\\'" . ruby-mode)))
+(require 'enh-ruby-mode)
 
-(use-package robe
-  :config
-  (push 'company-robe company-backends))
+(require 'robe)
+(push 'company-robe company-backends)
 
-(use-package rinari)
+(require 'rinari)
 
 (provide 'lang-ruby)

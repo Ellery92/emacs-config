@@ -1,9 +1,9 @@
 ;;; emacs-lisp.el --- config for Elisp programming.
 
-(use-package rainbow-delimiters)
-(use-package rainbow-mode)
-(use-package elisp-slime-nav)
-(use-package crux)
+(require 'rainbow-delimiters)
+(require 'rainbow-mode)
+(require 'elisp-slime-nav)
+(require 'crux)
 
 ;; a great lisp coding hook
 (defun prelude-lisp-coding-defaults ()
@@ -58,6 +58,7 @@ Start `ielm' if it's not already running."
 (add-hook 'emacs-lisp-mode-hook (lambda ()
                                   (run-hooks 'prelude-emacs-lisp-mode-hook)))
 
+(require 'cask)
 (add-to-list 'auto-mode-alist '("Cask\\'" . emacs-lisp-mode))
 
 ;; ielm is an interactive Emacs Lisp shell

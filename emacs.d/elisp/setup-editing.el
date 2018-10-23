@@ -39,61 +39,51 @@
 
 ;; Package: volatile-highlights
 ;; GROUP: Editing -> Volatile Highlights
-(use-package volatile-highlights
-  :init
-  (volatile-highlights-mode t))
+(require 'volatile-highlights)
+(volatile-highlights-mode t)
 
 ;; Package: undo-tree
 ;; GROUP: Editing -> Undo -> Undo Tree
-(use-package undo-tree
-  :init
-  (global-undo-tree-mode 1))
+(require 'undo-tree)
+(global-undo-tree-mode 1)
 
 
 ;; Package: yasnippet
 ;; GROUP: Editing -> Yasnippet
 ;; Package: yasnippet
-(use-package yasnippet
-  :defer t
-  :init
-  (add-hook 'prog-mode-hook 'yas-minor-mode))
+(require 'yasnippet)
+(add-hook 'prog-mode-hook 'yas-minor-mode)
 
 ;; Package: clean-aindent-mode
-(use-package clean-aindent-mode
-  :init
-  (add-hook 'prog-mode-hook 'clean-aindent-mode))
+(require 'clean-aindent-mode)
+(add-hook 'prog-mode-hook 'clean-aindent-mode)
 
 ;; Package: dtrt-indent
-(use-package dtrt-indent
-  :init
-  (dtrt-indent-mode 1)
-  (setq dtrt-indent-verbosity 0))
+(require 'dtrt-indent)
+(dtrt-indent-mode 1)
+(setq dtrt-indent-verbosity 0)
 
 ;; Package: ws-butler
-(use-package ws-butler
-  :init
-  (add-hook 'prog-mode-hook 'ws-butler-mode)
-  (add-hook 'text-mode 'ws-butler-mode)
-  (add-hook 'fundamental-mode 'ws-butler-mode))
+(require 'ws-butler)
+(add-hook 'prog-mode-hook 'ws-butler-mode)
+(add-hook 'text-mode 'ws-butler-mode)
+(add-hook 'fundamental-mode 'ws-butler-mode)
 
 ;; PACKAGE: comment-dwim-2
-(use-package comment-dwim-2
-  :bind (("M-;" . comment-dwim-2))
-  )
+(require 'comment-dwim-2)
+(global-set-key (kbd "M-;") 'comment-dwim-2)
 
 ;; PACKAGE: anzu
 ;; GROUP: Editing -> Matching -> Isearch -> Anzu
-(use-package anzu
-  :init
-  (global-anzu-mode)
-  (global-set-key (kbd "M-%") 'anzu-query-replace)
-  (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp))
+(require 'anzu)
+(global-anzu-mode)
+(global-set-key (kbd "M-%") 'anzu-query-replace)
+(global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
 
 ;; PACKAGE: iedit
-(use-package iedit
-  :bind (("C-;" . iedit-mode))
-  :init
-  (setq iedit-toggle-key-default nil))
+(require 'iedit)
+(global-set-key (kbd "C-;") 'iedit-mode)
+(setq iedit-toggle-key-default nil)
 
 ;; Customized functions
 (defun prelude-move-beginning-of-line (arg)

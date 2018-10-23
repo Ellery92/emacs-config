@@ -1,39 +1,33 @@
-(use-package gif-screencast
-  :config
-  (define-key gif-screencast-mode-map (kbd "<f8>") 'gif-screencast-toggle-pause)
-  (define-key gif-screencast-mode-map (kbd "<f9>") 'gif-screencast-stop))
+(require 'gif-screencast)
 
-(use-package keycast)
+(define-key gif-screencast-mode-map (kbd "<f8>") 'gif-screencast-toggle-pause)
+(define-key gif-screencast-mode-map (kbd "<f9>") 'gif-screencast-stop)
 
-(use-package helm-system-packages)
+(require 'keycast)
 
-(use-package pdf-tools
-  :init (pdf-tools-install)
-  :mode ("\\.pdf" . pdf-view-mode))
+(require 'helm-system-packages)
 
-(use-package emms
-  :config
-  (emms-all)
-  (emms-default-players))
+(require 'pdf-tools)
+(pdf-tools-install)
 
-(use-package emms-bilibili)
+(require 'emms)
+(emms-all)
+(emms-default-players)
 
-(use-package helm-youtube
-  :config
-  (setq request-curl-options (list "--preproxy" "socks5://127.0.0.1:1080"))
-  (setq helm-youtube-key "AIzaSyDz-ATMpi_vEsVD2dUDhwu4kh8XZa5UfcQ"))
+(require 'emms-bilibili)
 
-(use-package restclient)
-;; (use-package restclient-helm)
+(require 'helm-youtube)
+(setq request-curl-options (list "--preproxy" "socks5://127.0.0.1:1080"))
+(setq helm-youtube-key "AIzaSyDz-ATMpi_vEsVD2dUDhwu4kh8XZa5UfcQ")
 
-(use-package restart-emacs)
+(require 'restclient)
+;; (require 'restclient-helm)
 
-(use-package pcap-mode)
+(require 'restart-emacs)
 
-(unless (package-installed-p 'langtool)
-  (package-install 'langtool))
+(require 'pcap-mode)
+
 (setq langtool-java-classpath "/usr/share/languagetool:/usr/share/java/languagetool/*")
-
 (defun langtool-autoshow-detail-popup (overlays)
   (when (require 'popup nil t)
     ;; Do not interrupt current popup
@@ -47,18 +41,16 @@
       'langtool-autoshow-detail-popup)
 (require 'langtool)
 
-(use-package plantuml-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
-  (setq plantuml-jar-path "/opt/plantuml/plantuml.jar"))
+(require 'plantuml-mode)
+(add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+(setq plantuml-jar-path "/opt/plantuml/plantuml.jar")
 
-(use-package flycheck-plantuml
-  :init
-  (flycheck-plantuml-setup)
-  (flycheck-mode))
+(require 'flycheck-plantuml)
+
+(flycheck-plantuml-setup)
+(add-hook 'plantuml-mode-hook #'flycheck-mode)
 
 ;; from emacswiki
-(add-to-list 'load-path (concat user-emacs-directory "elisp/emacswiki"))
 (require 'dired+)
 
 (provide 'extra-extensions)

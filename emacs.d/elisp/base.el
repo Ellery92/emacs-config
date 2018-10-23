@@ -138,5 +138,7 @@
 
 (setq browse-url-generic-program "google-chrome-stable")
 
+(add-to-list 'load-path (concat user-emacs-directory "elisp/emacswiki"))
+
 (provide 'base)
 ;;; base ends here

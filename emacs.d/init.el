@@ -3,32 +3,16 @@
 ;;; This is my init file
 
 ;;; Code:
+(setq warning-minimum-level :error)
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-
-
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/")
-             '("elpy" . "http://jorgenschaefer.github.io/packages/"))
-
-(if (version< emacs-version "26.0.50")
-    (package-initialize))
-
-(when (not package-archive-contents)
-  (package-refresh-contents))
-
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+(require 'cask "/usr/share/cask/cask.el")
+(cask-initialize)
 
 (add-to-list 'load-path (concat user-emacs-directory "elisp"))
 
 (require 'base)
 (require 'base-theme)
 (require 'base-extensions)
-(require 'base-functions)
 (require 'base-global-keys)
 
 (require 'setup-helm)
@@ -37,13 +21,17 @@
 (require 'lang-elisp)
 (require 'lang-c)
 (require 'lang-python)
-(require 'lang-java)
+;; (require 'lang-java)
+(require 'lang-rust)
+(require 'lang-common-lisp)
 (require 'lang-ruby)
-(require 'lang-javascript)
-(require 'lang-web)
 (require 'lang-go)
-(require 'lang-php)
-(require 'lang-haskell)
-(require 'lang-elixir)
+(require 'lang-racket)
+;; (require 'lang-javascript)
+;; (require 'lang-web)
+;; (require 'lang-php)
+;; (require 'lang-haskell)
+;; (require 'lang-elixir)
 
 (require 'extra-extensions)
+(require 'base-functions)
